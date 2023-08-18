@@ -50,16 +50,25 @@ pipeline {
             }
         }
 
-        stage('Install Docker and Run Docker Compose') {
+        stage('Install Docker') {
             steps {
                 script {
                     def instanceIp = bat(script: "cd terraform/ && terraform output instance_ip", returnStatus: true).trim()
-                    def composeFileUrl = 'https://raw.githubusercontent.com/sumitbhatia101/InfraAlsCode/master/docker-compose.yml'
 
                     bat "ssh -o StrictHostKeyChecking=no ec2-user@${instanceIp} 'sudo yum update -y && sudo yum install -y docker'"
                     bat "ssh -o StrictHostKeyChecking=no ec2-user@${instanceIp} 'sudo service docker start && sudo usermod -a -G docker ec2-user'"
-                    bat "ssh -o StrictHostKeyChecking=no ec2-user@${instanceIp} 'curl -o docker-compose.yml ${composeFileUrl}'"
-                    bat "ssh -o StrictHostKeyChecking=no ec2-user@${instanceIp} 'docker-compose -f docker-compose.yml up -d'"
+                }
+            }
+        }
+
+        stage('Terminate EC2') {
+            // Sleep for 5 minutes before terminating the EC2 instance
+            sleep time: 300, unit: 'SECONDS'
+
+            steps {
+                script {
+                    def instanceId = bat(script: "cd terraform/ && terraform output instance_id", returnStatus: true).trim()
+                    bat "aws ec2 terminate-instances --instance-ids ${instanceId}"
                 }
             }
         }
