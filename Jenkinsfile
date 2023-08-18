@@ -49,18 +49,6 @@ pipeline {
                 bat label: 'Terraform Apply', script: 'cd terraform/ && terraform apply -input=false tfplan'
             }
         }
-
-        stage('Install Docker') {
-            steps {
-                script {
-                    def instanceIp = bat(script: 'cd terraform/ && terraform output instance_ip', returnStdout: true).trim()
-                    echo "Instance IP: ${instanceIp}"
-                    bat "ssh -o StrictHostKeyChecking=no -i path\\to\\your\\ssh\\key.pem ec2-user@${instanceIp} 'sudo yum install -y docker'"
-                    bat "ssh -o StrictHostKeyChecking=no -i path\\to\\your\\ssh\\key.pem ec2-user@${instanceIp} 'sudo systemctl start docker'"
-                }
-            }
-        }
-
         stage('Terminate EC2') {
             steps {
                 script {
