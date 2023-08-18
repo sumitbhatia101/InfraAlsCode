@@ -23,9 +23,9 @@ pipeline {
 
         stage('Plan') {
             steps {
-                sh 'cd terraform/ && terraform init'
-                sh 'cd terraform/ && terraform plan -out tfplan'
-                sh 'cd terraform/ && terraform show -no-color tfplan > tfplan.txt'
+                bat label: 'Terraform Init', script: 'cd terraform/ && terraform init'
+                bat label: 'Terraform Plan', script: 'cd terraform/ && terraform plan -out tfplan'
+                bat label: 'Save Plan Output', script: 'cd terraform/ && terraform show -no-color tfplan > tfplan.txt'
             }
         }
 
@@ -46,19 +46,17 @@ pipeline {
 
         stage('Apply') {
             steps {
-                sh 'cd terraform/ && terraform apply -input=false tfplan'
+                bat label: 'Terraform Apply', script: 'cd terraform/ && terraform apply -input=false tfplan'
             }
         }
 
         stage('Install Docker') {
             steps {
                 script {
-                    def instanceIp = bat(script: 'cd terraform/ && terraform output instance_ip', returnStatus: true).trim()
+                    def instanceIp = bat(script: 'cd terraform/ && terraform output instance_ip', returnStdout: true).trim()
                     echo "Instance IP: ${instanceIp}"
-                    sshagent(credentials: ['SSH_KEY']) {
-                        sh "ssh -o StrictHostKeyChecking=no -i path/to/your/ssh/key.pem ec2-user@${instanceIp} 'sudo yum install -y docker'"
-                        sh "ssh -o StrictHostKeyChecking=no -i path/to/your/ssh/key.pem ec2-user@${instanceIp} 'sudo systemctl start docker'"
-                    }
+                    bat "ssh -o StrictHostKeyChecking=no -i path\\to\\your\\ssh\\key.pem ec2-user@${instanceIp} 'sudo yum install -y docker'"
+                    bat "ssh -o StrictHostKeyChecking=no -i path\\to\\your\\ssh\\key.pem ec2-user@${instanceIp} 'sudo systemctl start docker'"
                 }
             }
         }
@@ -66,7 +64,7 @@ pipeline {
         stage('Terminate EC2') {
             steps {
                 script {
-                    def instanceId = bat(script: 'cd terraform/ && terraform output instance_id', returnStatus: true).trim()
+                    def instanceId = bat(script: 'cd terraform/ && terraform output instance_id', returnStdout: true).trim()
                     echo "Terminating EC2 instance with ID: ${instanceId}"
                     bat "aws ec2 terminate-instances --instance-ids ${instanceId}"
                 }
