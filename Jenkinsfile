@@ -23,9 +23,11 @@ pipeline {
 
         stage('Plan') {
             steps {
-                bat label: 'Terraform Init', script: 'cd terraform/ && terraform init'
-                bat label: 'Terraform Plan', script: 'cd terraform/ && terraform plan -out tfplan'
-                bat label: 'Save Plan Output', script: 'cd terraform/ && terraform show -no-color tfplan > tfplan.txt'
+                script {
+                    bat label: 'Terraform Init', script: 'cd terraform/ && terraform init'
+                    bat label: 'Terraform Plan', script: 'cd terraform/ && terraform plan -out tfplan'
+                    bat label: 'Save Plan Output', script: 'cd terraform/ && terraform show -no-color tfplan > tfplan.txt'
+                }
             }
         }
 
@@ -49,12 +51,13 @@ pipeline {
                 bat label: 'Terraform Apply', script: 'cd terraform/ && terraform apply -input=false tfplan'
             }
         }
+
         stage('Terminate EC2') {
             steps {
                 script {
                     def instanceId = bat(script: 'cd terraform/ && terraform output instance_id', returnStdout: true).trim()
                     echo "Terminating EC2 instance with ID: ${instanceId}"
-                    bat "aws ec2 terminate-instances --instance-ids ${instanceId}"
+                    bat "aws ec2 terminate-instances --instance-ids \"${instanceId}\""
                 }
             }
         }
