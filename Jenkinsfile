@@ -60,3 +60,17 @@ pipeline {
                 }
             }
         }
+    }
+
+    post {
+        always {
+            script {
+                // Sleep for 5 minutes before terminating the EC2 instance
+                sleep(time: 300, unit: 'SECONDS')
+
+                def instanceId = bat(script: "cd terraform/ && terraform output instance_id", returnStatus: true).trim()
+                bat "aws ec2 terminate-instances --instance-ids ${instanceId}"
+            }
+        }
+    }
+}
