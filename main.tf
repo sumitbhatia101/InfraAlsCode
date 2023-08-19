@@ -7,7 +7,7 @@ resource "aws_instance" "ec2_instance" {
   instance_type = "t2.micro"
   subnet_id     = "subnet-0312b60b435c51e16"  # Replace with your subnet ID
 
-  security_groups = [aws_security_group.instance_sg.name]
+  vpc_security_group_ids = [aws_security_group.instance_sg.id]  # Use id instead of groupName
 
   tags = {
     Name = "TF-Instance"
@@ -33,7 +33,7 @@ resource "aws_security_group" "instance_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   
-  ingress {
+ ingress {
     from_port   = 9000
     to_port     = 9000
     protocol    = "tcp"
