@@ -5,7 +5,7 @@ provider "aws" {
 resource "aws_instance" "ec2_instance" {
   ami           = "ami-0310483fb2b488153"  # Replace with your desired AMI ID
   instance_type = "t2.micro"
-  subnet_id     = subnet-0312b60b435c51e16  # Replace with your subnet ID
+  subnet_id     = "subnet-0312b60b435c51e16"  # Replace with your subnet ID
 
   security_groups = [aws_security_group.instance_sg.name]
 
