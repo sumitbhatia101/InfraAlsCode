@@ -51,6 +51,26 @@ pipeline {
                 bat label: 'Terraform Apply', script: 'cd terraform/ && terraform apply -input=false tfplan'
             }
         }
+        stage('Fetch Local IP and Docker-Compose') {
+            steps {
+                script {
+                  def localIP = bat(script: 'terraform output local_ip', returnStdout: true).trim()
+            
+            // Clone the GitHub repository containing docker-compose.yml
+                  dir('temp_repo') {
+                  git 'https://github.com/your-username/your-repo.git'
+                
+                // Modify docker-compose.yml with local IP
+                  powershell '''
+                    $filePath = "temp_repo/docker-compose.yml"
+                    $content = Get-Content $filePath
+                    $content = $content -replace "HOST_IP=PLACEHOLDER", "HOST_IP=${localIP}"
+                    $content | Set-Content $filePath
+                '''
+            }
+        }
+    }
+}
 
         stage('Terminate EC2') {
             steps {
