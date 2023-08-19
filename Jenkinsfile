@@ -58,7 +58,7 @@ pipeline {
             
             // Clone the GitHub repository containing docker-compose.yml
                   dir('temp_repo') {
-                  git 'https://github.com/your-username/your-repo.git'
+                  git 'https://github.com/sumitbhatia101/InfraAlsCode.git'
                 
                 // Modify docker-compose.yml with local IP
                   powershell '''
