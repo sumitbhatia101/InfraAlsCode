@@ -68,4 +68,8 @@ resource "aws_security_group" "instance_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+output "local_ip" {
+  value = aws_instance.ec2_instance.private_ip
+  }
+
 }
