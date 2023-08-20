@@ -57,13 +57,17 @@ pipeline {
             steps {
                 script {
                     def localIP = bat(script: 'terraform output local_ip', returnStdout: true).trim()
+                    echo "Local IP: ${localIP}"
             
                     dir('temp_repo') {
                         git 'https://github.com/sumitbhatia101/InfraAlsCode.git'
+
+                        def filePath = "${env.WORKSPACE}\\temp_repo\\docker-compose.yml"
+                        echo "File Path: ${filePath}"
                     
                         powershell '''
-                            $filePath = Join-Path $env:WORKSPACE "temp_repo\\docker-compose.yml"
-                            $content = Get-Content $filePath
+                            
+                            $content = Get-Content $using:filePath
                             $content = $content -replace "HOST_IP=PLACEHOLDER", "HOST_IP=${localIP}"
                             $content | Set-Content $filePath
                             '''
