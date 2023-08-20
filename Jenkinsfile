@@ -62,7 +62,7 @@ pipeline {
                         git 'https://github.com/sumitbhatia101/InfraAlsCode.git'
                     
                         powershell '''
-                            $filePath = "temp_repo/docker-compose.yml"
+                            $filePath = "docker-compose.yml"
                             $content = Get-Content $filePath
                             $content = $content -replace "HOST_IP=PLACEHOLDER", "HOST_IP=${localIP}"
                             $content | Set-Content $filePath
