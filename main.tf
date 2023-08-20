@@ -18,6 +18,7 @@ resource "aws_instance" "ec2_instance" {
               # This script will run when the instance starts
               apt-get update
               apt-get install -y docker.io
+              apt-get install -y docker-compose
               usermod -aG docker ubuntu
               EOF
 }
