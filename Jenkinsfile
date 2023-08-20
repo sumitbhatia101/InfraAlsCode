@@ -63,10 +63,13 @@ pipeline {
                     
                         powershell '''
                             $filePath = "docker-compose.yml"
+                            $workingDir = "${env.WORKSPACE}\\temp_repo"
+                            Set-Location -Path $workingDir
                             $content = Get-Content $filePath
                             $content = $content -replace "HOST_IP=PLACEHOLDER", "HOST_IP=${localIP}"
                             $content | Set-Content $filePath
-                        '''
+                            '''
+
                     }
                 }
             }
