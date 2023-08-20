@@ -11,6 +11,16 @@ pipeline {
     agent any
 
     stages {
+        stage('SonarCloud Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarCloud') {
+                        // Run SonarScanner using Maven
+                        bat 'mvn sonar:sonar'
+                    }
+                }
+            }
+        }        
         stage('checkout') {
             steps {
                 script {
