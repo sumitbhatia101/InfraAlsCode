@@ -81,6 +81,18 @@ pipeline {
         }
     }
 }
+        stage('Run Docker Compose') {
+           steps {
+               script {
+                   def sshKeyPath = credentials('AWS_SSH_KEY')  // Use the credentials ID for the SSH key
+                   
+                   bat "pscp -i ${sshKeyPath} temp_repo/docker-compose.yml ec2-user@${ec2InstanceIP}:~/"
+                   bat "plink -i ${sshKeyPath} ec2-user@${ec2InstanceIP} 'cd ~/ && docker-compose up -d'"
+                        
+         }
+    }
+}
+    
 
         stage('Terminate EC2') {
             steps {
