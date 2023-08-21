@@ -25,6 +25,14 @@ resource "aws_instance" "ec2_instance" {
 
 resource "aws_security_group" "instance_sg" {
   name_prefix = "instance-sg-"
+
+  # Ingress rule to allow SSH traffic from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   
   # Inbound rules to allow incoming traffic on specified ports
   ingress {
